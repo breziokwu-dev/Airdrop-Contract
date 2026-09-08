@@ -5,8 +5,11 @@ pragma solidity ^0.8.24;
 import {Ownable} from "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "lib/openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
+import {SafeERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract MerkleAirdrop is Ownable {
+
+    using SafeERC20 for IERC20;
 
     address public immutable token;
     bytes32 public immutable merkleRoot;
@@ -40,7 +43,7 @@ contract MerkleAirdrop is Ownable {
         uint256 balance = IERC20(token).balanceOf(address(this));
         if (balance < amount) revert InsufficientAirdropBalance();
         hasClaimed[msg.sender] = true;
-        IERC20(token).transfer(msg.sender, amount);
+        IERC20(token).safeTransfer(msg.sender, amount);
         emit Claimed(msg.sender, amount);
     }
 
